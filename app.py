@@ -55,6 +55,8 @@ def upload_fixed_path_image():
         # Save
         img.save(filepath)
 
+        img.close()
+
         # URI to be returned
         image_uri = request.host_url + 'image/' + filename
         parsed_url = urlparse(image_uri)
