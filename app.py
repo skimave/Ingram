@@ -4,6 +4,7 @@ import os, uuid, io
 from PIL import Image
 import imghdr
 from datetime import datetime, timedelta
+from urllib.parse import urlparse
 import config
 
 app = Flask(__name__)
@@ -54,9 +55,11 @@ def upload_fixed_path_image():
 
         # URI to be returned
         image_uri = request.host_url + 'image/' + filename
+        parsed_url = urlparse(image_uri)
+        secure_uri = parsed_url._replace(scheme="https").geturl()
 
         # A format that Palaver accepts
-        response = Response(image_uri, mimetype='text/uri-list')
+        response = Response(secure_uri, mimetype='text/uri-list')
         return response
     except IOError:
         return "Failed to process the image", 400
