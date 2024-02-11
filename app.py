@@ -13,6 +13,8 @@ UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
 users = {
     "api": config.API_PASSWORD
 }
