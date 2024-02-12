@@ -60,7 +60,9 @@ def upload_fixed_path_image():
                     for i, frame in enumerate(reader):
                         meta_data = reader.get_meta_data(i)
                         duration = meta_data.get('duration', 0)
-                        durations.append(duration)
+                        #durations.append(duration)
+                        # Due to Palaver doing something to the original GIF durations :|
+                        durations.append(66)
 
                     # Save all frames to a new file
                     frames[0].save(filepath, save_all=True, append_images=frames[1:], optimize=False, loop=0, format='GIF', duration=durations)
