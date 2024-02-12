@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify, send_from_directory, Response
-from flask_httpauth import HTTPBasicAuth
 import os, uuid, io
 from PIL import Image, ImageOps
 import imghdr
@@ -8,21 +7,12 @@ from urllib.parse import urlparse
 import config
 
 app = Flask(__name__)
-auth = HTTPBasicAuth()
+
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-users = {
-    "api": config.API_PASSWORD
-}
-
-@auth.verify_password
-def verify_password(username, password):
-    if username in users and users[username] == password:
-        return username
 
 def validate_image(image_data):
     """Check if the bytes data is a valid image and return its extension, None if invalid."""
@@ -31,8 +21,7 @@ def validate_image(image_data):
         return '.' + (format if format != 'jpeg' else 'jpg')
     return None
 
-@app.route('/image.jpeg', methods=['PUT'])
-@auth.login_required
+@app.route(f'{config.SECRET_URL_PATH}/image.jpeg', methods=['PUT'])
 def upload_fixed_path_image():
     if request.content_type != 'image/jpeg':
         return "Unsupported media type", 415
@@ -55,7 +44,6 @@ def upload_fixed_path_image():
 
         # Save
         img.save(filepath)
-
         img.close()
 
         # URI to be returned
@@ -68,7 +56,6 @@ def upload_fixed_path_image():
         return response
     except IOError:
         return "Failed to process the image", 400
-
 
 @app.route('/', methods=['GET'])
 def index():

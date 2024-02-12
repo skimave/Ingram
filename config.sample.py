@@ -1,5 +1,5 @@
-# API password to upload images, set this to something secure
-API_PASSWORD = ''
+# Secret URL path to upload images, set this to something secure
+SECRET_URL_PATH = ''
 
 # How old files should be automatically deleted?
 
