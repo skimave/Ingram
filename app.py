@@ -48,8 +48,14 @@ def upload_fixed_path_image():
             if file_extension is ".gif":
             # Ensure it's actually an animated GIF
                 if img.is_animated:
-                    frames = [frame.copy() for frame in ImageSequence.Iterator(img)]
-                    
+                    frames = []
+                    durations = []
+                    for frame in ImageSequence.Iterator(img):
+                        # Copy the frame to work with it and preserve its properties
+                        new_frame = frame.copy()
+                        frames.append(new_frame)
+                        durations.append(frame.info.get('duration', 100))
+
                     # Save all frames to a new file
                     frames[0].save(filepath, save_all=True, append_images=frames[1:], optimize=False, loop=0, format='GIF')
             else:
