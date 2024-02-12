@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory, Response
 import os, uuid, io
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageSequence
 import imghdr
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
@@ -17,13 +17,17 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 def validate_image(image_data):
     # Image type check
     format = imghdr.what(None, image_data)
-    if format:
-        return '.' + (format if format != 'jpeg' else 'jpg')
-    return None
+    if format == 'jpeg':
+        return '.jpg'
+    elif format == 'gif':
+        return '.gif'
+    else:
+        return None
 
+@app.route(f'/{config.SECRET_URL_PATH}/image.gif', methods=['PUT'])
 @app.route(f'/{config.SECRET_URL_PATH}/image.jpeg', methods=['PUT'])
 def upload_fixed_path_image():
-    if request.content_type != 'image/jpeg':
+    if request.content_type not in ['image/jpeg', 'image/gif']:
         return "Unsupported media type", 415
 
     image_data = request.data
@@ -35,15 +39,24 @@ def upload_fixed_path_image():
         file_extension = validate_image(image_data)
         if file_extension is None:
             return jsonify({"error": "Invalid image file."}), 400
-
-        # From bytes to an image...
-        img = Image.open(io.BytesIO(image_data))
-        img = ImageOps.exif_transpose(img)
-        filename = f"{uuid.uuid4()}.jpeg"
+            
+        # Pregenerate a filename
+        filename = f"{uuid.uuid4()}{file_extension}"
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
-        # Save
-        img.save(filepath)
+        with Image.open(io.BytesIO(image_data)) as img:
+            # Ensure it's actually an animated GIF
+            if img.is_animated:
+                frames = [frame.copy() for frame in ImageSequence.Iterator(img)]
+                
+                # Save all frames to a new file
+                frames[0].save(filepath, save_all=True, append_images=frames[1:], optimize=False, loop=0, format='GIF')
+            else:
+                #Rotation fixes
+                img = ImageOps.exif_transpose(img)
+                img.save(filepath)
+
+        # Close finally
         img.close()
 
         # URI to be returned
