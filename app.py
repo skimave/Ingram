@@ -15,7 +15,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 
 def validate_image(image_data):
-    """Check if the bytes data is a valid image and return its extension, None if invalid."""
+    # Image type check
     format = imghdr.what(None, image_data)
     if format:
         return '.' + (format if format != 'jpeg' else 'jpg')
