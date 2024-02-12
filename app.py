@@ -39,19 +39,21 @@ def upload_fixed_path_image():
         file_extension = validate_image(image_data)
         if file_extension is None:
             return jsonify({"error": "Invalid image file."}), 400
-            
+
         # Pregenerate a filename
         filename = f"{uuid.uuid4()}{file_extension}"
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
         with Image.open(io.BytesIO(image_data)) as img:
+            if file_extension is ".gif":
             # Ensure it's actually an animated GIF
-            if img.is_animated:
-                frames = [frame.copy() for frame in ImageSequence.Iterator(img)]
-                
-                # Save all frames to a new file
-                frames[0].save(filepath, save_all=True, append_images=frames[1:], optimize=False, loop=0, format='GIF')
+                if img.is_animated:
+                    frames = [frame.copy() for frame in ImageSequence.Iterator(img)]
+                    
+                    # Save all frames to a new file
+                    frames[0].save(filepath, save_all=True, append_images=frames[1:], optimize=False, loop=0, format='GIF')
             else:
+                # It's a JPG...
                 #Rotation fixes
                 img = ImageOps.exif_transpose(img)
                 img.save(filepath)
