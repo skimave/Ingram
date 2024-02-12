@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory, Response
 from flask_httpauth import HTTPBasicAuth
 import os, uuid, io
-from PIL import Image
+from PIL import Image, ImageOps
 import imghdr
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
@@ -49,6 +49,7 @@ def upload_fixed_path_image():
 
         # From bytes to an image...
         img = Image.open(io.BytesIO(image_data))
+        img = ImageOps.exif_transpose(img)
         filename = f"{uuid.uuid4()}.jpeg"
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
