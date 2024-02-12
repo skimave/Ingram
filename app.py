@@ -5,6 +5,7 @@ import imghdr
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 import config
+import imageio
 
 app = Flask(__name__)
 
@@ -54,8 +55,12 @@ def upload_fixed_path_image():
                         # Copy the frame to work with it and preserve its properties
                         new_frame = frame.copy()
                         frames.append(new_frame)
-                        # Horrible but it works. This is due to the IRC client messing with the frame duration information :|
-                        durations.append(42)
+                    # Iterate over each frame to extract and print its duration
+                    reader = imageio.get_reader(io.BytesIO(image_data), format='gif')
+                    for i, frame in enumerate(reader):
+                        meta_data = reader.get_meta_data(i)
+                        duration = meta_data.get('duration', 0)
+                        durations.append(duration)
 
                     # Save all frames to a new file
                     frames[0].save(filepath, save_all=True, append_images=frames[1:], optimize=False, loop=0, format='GIF', duration=durations)
