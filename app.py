@@ -21,7 +21,7 @@ def validate_image(image_data):
         return '.' + (format if format != 'jpeg' else 'jpg')
     return None
 
-@app.route(f'{config.SECRET_URL_PATH}/image.jpeg', methods=['PUT'])
+@app.route(f'/{config.SECRET_URL_PATH}/image.jpeg', methods=['PUT'])
 def upload_fixed_path_image():
     if request.content_type != 'image/jpeg':
         return "Unsupported media type", 415
