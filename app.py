@@ -45,7 +45,7 @@ def upload_fixed_path_image():
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
         with Image.open(io.BytesIO(image_data)) as img:
-            if file_extension is ".gif":
+            if file_extension == ".gif":
             # Ensure it's actually an animated GIF
                 if img.is_animated:
                     frames = []
