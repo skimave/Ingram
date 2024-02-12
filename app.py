@@ -54,7 +54,8 @@ def upload_fixed_path_image():
                         # Copy the frame to work with it and preserve its properties
                         new_frame = frame.copy()
                         frames.append(new_frame)
-                        durations.append(frame.info.get('duration', 100))
+                        # Horrible but it works. This is due to the IRC client messing with the frame duration information :|
+                        durations.append(42)
 
                     # Save all frames to a new file
                     frames[0].save(filepath, save_all=True, append_images=frames[1:], optimize=False, loop=0, format='GIF', duration=durations)
