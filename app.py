@@ -57,7 +57,7 @@ def upload_fixed_path_image():
                         durations.append(frame.info.get('duration', 100))
 
                     # Save all frames to a new file
-                    frames[0].save(filepath, save_all=True, append_images=frames[1:], optimize=False, loop=0, format='GIF')
+                    frames[0].save(filepath, save_all=True, append_images=frames[1:], optimize=False, loop=0, format='GIF', duration=durations)
             else:
                 # It's a JPG...
                 #Rotation fixes
