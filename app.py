@@ -5,7 +5,6 @@ import imghdr
 from datetime import datetime, timedelta
 from urllib.parse import urlparse
 import config
-import imageio
 
 app = Flask(__name__)
 
@@ -19,7 +18,7 @@ def validate_image(image_data):
     # Image type check
     format = imghdr.what(None, image_data)
     if format == 'jpeg':
-        return '.jpg'
+        return '.jpeg'
     elif format == 'gif':
         return '.gif'
     else:
@@ -55,13 +54,7 @@ def upload_fixed_path_image():
                         # Copy the frame to work with it and preserve its properties
                         new_frame = frame.copy()
                         frames.append(new_frame)
-                    # Iterate over each frame to extract and print its duration
-                    reader = imageio.get_reader(io.BytesIO(image_data), format='gif')
-                    for i, frame in enumerate(reader):
-                        meta_data = reader.get_meta_data(i)
-                        duration = meta_data.get('duration', 0)
-                        #durations.append(duration)
-                        # Due to Palaver doing something to the original GIF durations :|
+                        # Horrible but it works. This is due to the IRC client messing with the frame duration information :|
                         durations.append(66)
 
                     # Save all frames to a new file
