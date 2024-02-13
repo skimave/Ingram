@@ -89,6 +89,8 @@ def not_found(e):
 
 @app.route('/image/<filename>', methods=['GET'])
 def get_image(filename):
+    # Sanitize...
+    filename = os.path.basename(filename)
     # Check if file is old enough for pending deletion
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     if os.path.exists(file_path):
